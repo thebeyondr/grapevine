@@ -8,17 +8,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  ChevronDown,
+  Check,
   Copy,
   CopyIcon,
   EllipsisVertical,
@@ -26,6 +20,7 @@ import {
   Link,
   LoaderCircle,
   Lock,
+  RefreshCcw,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -49,27 +44,15 @@ const medicalProfiles = [
 
 const HealthcarePlatform = () => {
   const baseDelay = 0.6;
-  const dynamicDelay = (impact: number) => baseDelay * impact;
-  const [searchState, setSearchState] = useState("idle");
-  const [phraseGenerationStatus, setPhraseGenerationStatus] = useState("idle");
-  const phraseLabels = {
-    idle: "Generate secret passphrase",
-    loading: "Generating...",
-    complete: "Generated",
-  };
-  const fakeSearch = () => {
-    setSearchState("loading");
+  const [sendState, setSendState] = useState("idle");
+
+  const fakeSend = () => {
+    setSendState("loading");
     setTimeout(() => {
-      setSearchState("complete");
+      setSendState("complete");
     }, 1500);
   };
 
-  const fakeGeneratePhrase = () => {
-    setPhraseGenerationStatus("loading");
-    setTimeout(() => {
-      setPhraseGenerationStatus("complete");
-    }, 1500);
-  };
   return (
     <article
       className="flex flex-col space-y-4"
@@ -79,7 +62,20 @@ const HealthcarePlatform = () => {
         Healthcare Communication Platform
       </h2>
       <div className="flex flex-col items-center justify-center bg-slate-200 rounded-lg px-2 py-6 md:px-6">
-        <div className="bg-slate-800 text-slate-100 md:w-96 rounded-lg rounded-b-xl overflow-hidden border-none">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            transition: {
+              type: "spring",
+              bounce: 0.2,
+              delay: 0.1,
+              duration: 0.8,
+            },
+          }}
+          className="bg-slate-800 text-slate-100 md:w-96 rounded-lg rounded-b-xl overflow-hidden border-none"
+        >
           <div className="flex items-center justify-between px-3 py-4 w-full">
             <div className="flex items-center space-x-2">
               <Avatar>
@@ -101,7 +97,7 @@ const HealthcarePlatform = () => {
           <Card className="w-full rounded-t-xl">
             <CardHeader>
               <CardTitle className="text-lg font-medium text-slate-700">
-                Invite your network
+                Collaborate with your network
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -109,124 +105,84 @@ const HealthcarePlatform = () => {
                 <Input
                   type="text"
                   placeholder="Send invites via email"
-                  className="focus:outline-none focus:ring-[1.5px] focus:ring-slate-300 focus:ring-offset-1 transition-colors"
+                  disabled={sendState === "loading" || sendState === "complete"}
+                  className="border-[1.5px] border-slate-300 focus:outline-none focus:ring-[1.5px] focus:ring-slate-300 focus:ring-offset-1 transition-colors"
                 />
                 <motion.button
-                  className={buttonVariants({
+                  className={`${buttonVariants({
                     variant: "default",
                     size: "sm",
-                  })}
-                  onClick={fakeSearch}
+                  })} ${sendState === "complete" ? "bg-green-600" : ""}`}
+                  onClick={fakeSend}
+                  disabled={sendState === "loading" || sendState === "complete"}
                 >
-                  {searchState === "loading" ? (
+                  {sendState === "loading" ? (
                     <LoaderCircle className="animate-spin" />
+                  ) : sendState === "complete" ? (
+                    <Check />
                   ) : (
                     <ArrowRight />
                   )}
                 </motion.button>
               </div>
-              <p className="text-sm text-slate-500 pt-1">
-                Separate emails with commas
-              </p>
+              <motion.p
+                layout
+                className={`text-xs text-slate-500 pt-1 ${
+                  sendState === "complete" ? "text-green-600" : ""
+                }`}
+              >
+                {sendState === "complete"
+                  ? "Invites sent"
+                  : "Separate emails with commas"}
+              </motion.p>
               <div className="p-3"></div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between px-3 py-2 border-[2px] border-slate-300 bg-slate-100 rounded-lg border-dashed border-spacing-4">
-                  <div className="p-1 bg-slate-300 rounded-lg">
-                    <Lock className="text-slate-600" size={16} />
-                  </div>
-                  <span className="text-slate-600">kgntelkgteIHNaQzplNwQ</span>
-                  <span>
+                <div>
+                  <div className="flex space-x-2 items-center">
+                    <div className="flex items-center flex-1 space-x-4 px-3 py-2 border-[2px] border-slate-300 bg-slate-100 rounded-lg border-dashed border-spacing-4">
+                      <div className="p-1 bg-slate-300 rounded-lg">
+                        <Lock className="text-slate-600" size={16} />
+                      </div>
+                      <span className="text-slate-600 text-sm">
+                        kgntelkgteIHNaQzplNwQ
+                      </span>
+                    </div>
                     <Copy className="text-slate-400 inline ml-2" size={16} />
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between px-3 py-2 border-[2px] border-slate-300 bg-slate-100 rounded-lg border-dashed border-spacing-4">
-                  <div className="p-1 bg-slate-300 rounded-lg">
-                    <span>
-                      <Link className="text-slate-600" size={16} />
-                    </span>
+                    <RefreshCcw
+                      className="text-slate-400 inline ml-2"
+                      size={16}
+                    />
                   </div>
-                  <span className="text-slate-600">medica.se/oPldmqUn</span>
-                  <span>
+                  <p className="text-xs text-slate-500 pt-1 leading-tight">
+                    We recommend sending this secret through secure channels.
+                  </p>
+                </div>
+                <div>
+                  <div className="flex space-x-2 items-center pt-3">
+                    <div className="flex items-center flex-1 space-x-4 px-3 py-2 border-[2px] border-slate-300 bg-slate-100 rounded-lg border-dashed border-spacing-4">
+                      <div className="p-1 bg-slate-300 rounded-lg">
+                        <Link className="text-slate-600" size={16} />
+                      </div>
+                      <span className="text-slate-600 text-sm">
+                        medica.se/oPldmqUn
+                      </span>
+                    </div>
                     <CopyIcon
                       className="text-slate-400 inline ml-2 font-bold"
                       size={16}
                     />
-                  </span>
+                    <RefreshCcw
+                      className="text-slate-400 inline ml-2"
+                      size={16}
+                    />
+                  </div>
+                  <p className="text-xs text-slate-500 pt-1 leading-tight">
+                    Only share with people you trust. They will require the
+                    secret passphrase to access this link.
+                  </p>
                 </div>
               </div>
-
-              <section className="flex space-x-4 py-3">
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    className={`${buttonVariants({
-                      variant: "secondary",
-                      size: "sm",
-                    })}`}
-                  >
-                    Copy <ChevronDown className="inline ml-1" size={14} />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>Secret phrase</DropdownMenuItem>
-                    <DropdownMenuItem>Share link</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    className={`${buttonVariants({
-                      variant: "secondary",
-                      size: "sm",
-                    })}`}
-                  >
-                    Regenerate <ChevronDown className="inline ml-1" size={14} />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <DropdownMenuItem>Secret phrase</DropdownMenuItem>
-                    <DropdownMenuItem>Share link</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </section>
-
-              <div className="p-3"></div>
-              {searchState === "complete" && (
-                <ul>
-                  {medicalProfiles.map((profile, index) => (
-                    <motion.li
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{
-                        height: "auto",
-                        opacity: 1,
-                        transition: {
-                          type: "spring",
-                          bounce: 0.2,
-                          delay: dynamicDelay(0.5),
-                        },
-                      }}
-                      className="relative hover:bg-slate-50 transition-colors cursor-pointer"
-                      key={index}
-                    >
-                      <div className="flex items-center space-x-2 border-b-[1.5px] border-slate-100 p-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage
-                            src={profile.avatar}
-                            alt={profile.name}
-                          />
-                          <AvatarFallback>{profile.name[0]}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col">
-                          <span className="text-sm md:text-base font-semibold">
-                            {profile.name}
-                          </span>
-                          <span className="text-sm text-slate-400">
-                            {profile.profession}
-                          </span>
-                        </div>
-                      </div>
-                    </motion.li>
-                  ))}
-                </ul>
-              )}
             </CardContent>
             <CardFooter className="flex justify-end items-center bg-slate-100 py-2 px-4 text-sm rounded-b-lg">
               Powered by{" "}
@@ -236,7 +192,7 @@ const HealthcarePlatform = () => {
               </span>{" "}
             </CardFooter>
           </Card>
-        </div>
+        </motion.div>
       </div>
     </article>
   );
