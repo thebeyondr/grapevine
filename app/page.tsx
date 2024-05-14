@@ -1,3 +1,4 @@
+import BusinessVoting from "@/components/case-studies/business-voting";
 import HealthcarePlatform from "@/components/case-studies/healthcare-platform";
 
 const useCaseList = [
@@ -58,6 +59,7 @@ export default function Home() {
       <div className="p-6"></div>
 
       <HealthcarePlatform />
+      <BusinessVoting />
     </main>
   );
 }
