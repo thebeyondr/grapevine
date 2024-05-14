@@ -50,7 +50,7 @@ const BusinessVoting = () => {
               Should we expand Ivy Network into South East Asia?
             </h3>
             <div className="flex space-x-2 py-2">
-              <div className="flex items-center border border-slate-600 bg-slate-700 text-xs text-slate-300 px-2 py-0.5 rounded-lg">
+              <div className="flex items-center border border-slate-500 bg-slate-700 text-xs text-slate-300 px-2 py-0.5 rounded-lg">
                 <span>
                   <Users2 size={12} className="mr-1" />
                 </span>
