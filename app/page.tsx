@@ -34,32 +34,10 @@ export default function Home() {
           platforms and industries
         </p>
       </section>
-
-      {/* <Card className="w-max">
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Links</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul>
-            {useCaseList.map((useCase) => (
-              <li key={useCase.anchor}>
-                <Link href={`#${useCase.anchor}`} key={useCase.anchor}>
-                  <Button
-                    variant="link"
-                    className="w-full h-full justify-start px-0 "
-                  >
-                    {useCase.title}
-                  </Button>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card> */}
-      <div className="p-6"></div>
-
-      <HealthcarePlatform />
-      <BusinessVoting />
+      <section className="flex flex-col space-y-4">
+        <HealthcarePlatform />
+        <BusinessVoting />
+      </section>
     </main>
   );
 }
