@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -6,6 +8,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  ArrowRight,
+  Check,
+  Eye,
+  EyeOff,
   Grape,
   Loader2,
   Lock,
@@ -13,8 +19,26 @@ import {
   TicketCheck,
   Users2,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { buttonVariants } from "../ui/button";
 
 const BusinessVoting = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordCheckState, setPasswordCheckState] = useState("idle");
+  const [votesVisible, setVotesVisible] = useState(false);
+
+  const fakeProcessSecret = () => {
+    setPasswordCheckState("loading");
+    setTimeout(() => {
+      setPasswordCheckState("success");
+      setTimeout(() => {
+        setPasswordCheckState("complete");
+        setVotesVisible(true);
+      }, 2000);
+    }, 2000);
+  };
   return (
     <article className="flex flex-col space-y-4" id="business-voting">
       <h2 className="text-xl md:text-2xl font-semibold">Business Voting</h2>
@@ -46,8 +70,8 @@ const BusinessVoting = () => {
 
           <CardContent>
             <h5 className="text-sm text-slate-400 ">Pollen Labs</h5>
-            <h3 className="font-semibold text-lg md:text-2xl leading-tight text-slate-50">
-              Should we expand Ivy Network into South East Asia?
+            <h3 className="font-semibold text-lg md:text-2xl leading-tighter text-slate-50">
+              What is the next expansion location for Ivy Network?
             </h3>
             <div className="flex space-x-2 py-2">
               <div className="flex items-center border border-slate-500 bg-slate-700 text-xs text-slate-300 px-2 py-0.5 rounded-lg">
@@ -63,22 +87,146 @@ const BusinessVoting = () => {
                 <span>68% approval</span>
               </div>
             </div>
-            <div className="relative space-y-3">
-              <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full rounded-lg bg-slate-700/50 backdrop-blur-sm p-3 border-2 border-slate-600 border-dashed">
-                <Lock size={16} className="text-slate-300 mr-1" />
-                <span className="text-sm text-slate-300 text-center">
-                  Unlock more details
-                </span>
-              </div>
-              <section className="p-3 select-none">
-                <p>The test will focus on the following areas:</p>
-                <ul>
-                  <li>Marketing</li>
-                  <li>Sales</li>
-                  <li>Customer Success</li>
+            <div className="p-2" />
+            <AnimatePresence mode="popLayout">
+              {passwordCheckState !== "complete" && (
+                <motion.div
+                  className="flex space-x-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{
+                    opacity: 0,
+                    y: -10,
+                    transition: { duration: 0.5 },
+                  }}
+                >
+                  <div className="relative w-full">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter the secret phrase"
+                      disabled={
+                        passwordCheckState === "loading" ||
+                        passwordCheckState === "success"
+                      }
+                      className="w-full bg-slate-700 text-slate-100 border-slate-500 focus-visible:ring-slate-400 ring-offset-slate-700 placeholder:text-slate-400 pl-10"
+                    />
+                    <div className="absolute inset-y-1 left-3 top-1/2 transform -translate-y-1/2 text-slate-300 w-max">
+                      <Lock size={16} />
+                    </div>
+                    <div className="absolute inset-y-1 right-3 top-1/2 transform -translate-y-1/2 text-slate-300 w-max">
+                      {showPassword ? (
+                        <Eye size={16} onClick={() => setShowPassword(false)} />
+                      ) : (
+                        <EyeOff
+                          size={16}
+                          onClick={() => setShowPassword(true)}
+                        />
+                      )}
+                    </div>
+                  </div>
+                  <motion.button
+                    className={`${buttonVariants({
+                      variant: "default",
+                    })} ${
+                      passwordCheckState === "success"
+                        ? "bg-green-600"
+                        : "bg-slate-800 hover:bg-slate-700"
+                    }`}
+                    onClick={fakeProcessSecret}
+                    disabled={
+                      passwordCheckState === "loading" ||
+                      passwordCheckState === "success"
+                    }
+                  >
+                    {passwordCheckState === "loading" ? (
+                      <Loader2 className="animate-spin" />
+                    ) : passwordCheckState === "success" ? (
+                      <Check className="text-green-300" />
+                    ) : (
+                      <span className="text-slate-300">Unlock</span>
+                    )}
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            <motion.div
+              className="relative space-y-3"
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={
+                passwordCheckState === "complete"
+                  ? { opacity: 1, height: "auto" }
+                  : { opacity: 0, height: 0 }
+              }
+              exit={{
+                opacity: 0,
+                height: 0,
+                transition: { duration: 0.3, delay: 2 },
+              }}
+            >
+              <section className="p-3 select-none text-pretty text-slate-300">
+                <ul className="space-y-2">
+                  <li className="text-slate-300 relative rounded-lg border-[1.5px] border-green-500 overflow-hidden h-12">
+                    <motion.span
+                      className="absolute top-0 left-0 bg-green-700 h-full"
+                      initial={{ width: 0 }}
+                      layout
+                      animate={{
+                        width: votesVisible ? "40%" : 0,
+                      }}
+                      transition={{
+                        duration: 0.4,
+                        type: "spring",
+                        bounce: 0.1,
+                        delay: 0.2,
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center text-green-300">
+                      South East Asia
+                    </div>
+                  </li>
+                  <li className="text-slate-300 relative rounded-lg border-[1.5px] border-slate-500 overflow-hidden h-12">
+                    <motion.span
+                      className="absolute top-0 left-0 bg-slate-700 h-full"
+                      initial={{ width: 0 }}
+                      layout
+                      animate={{
+                        width: votesVisible ? "22%" : 0,
+                      }}
+                      transition={{
+                        duration: 0.4,
+                        type: "spring",
+                        bounce: 0.1,
+                        delay: 0.2,
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      Turkey
+                    </div>
+                  </li>
+                  <li className="text-slate-300 relative rounded-lg border-[1.5px] border-slate-500 overflow-hidden h-12">
+                    <motion.span
+                      className="absolute top-0 left-0 bg-slate-700 h-full"
+                      initial={{ width: 0 }}
+                      layout
+                      animate={{
+                        width: votesVisible ? "18%" : 0,
+                      }}
+                      transition={{
+                        duration: 0.4,
+                        type: "spring",
+                        bounce: 0.1,
+                        delay: 0.2,
+                      }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      Greenland
+                    </div>
+                  </li>
                 </ul>
               </section>
-            </div>
+            </motion.div>
           </CardContent>
 
           <CardFooter className="flex justify-end items-center bg-slate-700 py-2 px-4 text-sm rounded-b-lg text-slate-300">
