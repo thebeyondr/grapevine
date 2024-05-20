@@ -7,27 +7,79 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  ArrowRight,
   Check,
+  CheckCircle2,
   Eye,
   EyeOff,
   Grape,
   Loader2,
   Lock,
-  ThumbsUpIcon,
   TicketCheck,
   Users2,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { buttonVariants } from "../ui/button";
+
+const VOTE_OPTIONS_INITIAL = new Map([
+  ["South East Asia", 7],
+  ["Turkey", 5],
+  ["Greenland", 4],
+  ["Australia", 3],
+  ["Munich", 2],
+  ["London", 1],
+  ["New York", 1],
+  ["Los Angeles", 1],
+  ["Chicago", 1],
+]);
+
+const totalVotes = Array.from(VOTE_OPTIONS_INITIAL.values()).reduce(
+  (acc, curr) => acc + curr,
+  0
+);
+
+const VOTES_PROCESSED = Array.from(VOTE_OPTIONS_INITIAL.entries()).map(
+  ([name, votes]) => ({
+    name,
+    votes,
+    percentage: (votes / totalVotes) * 100,
+  })
+);
 
 const BusinessVoting = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [passwordCheckState, setPasswordCheckState] = useState("idle");
   const [votesVisible, setVotesVisible] = useState(false);
+  const [allVotes, setAllVotes] = useState(VOTES_PROCESSED);
+  const [currentVote, setCurrentVote] = useState("");
+
+  const updateVote = (name: string) => {
+    const tempVotes = [...allVotes];
+
+    // if a current vote exists, remove one from the current vote
+    if (currentVote) {
+      const currVoteIndex = tempVotes.findIndex(
+        (vote) => vote.name === currentVote
+      );
+      tempVotes[currVoteIndex].votes -= 1;
+      tempVotes[currVoteIndex].percentage =
+        (tempVotes[currVoteIndex].votes / totalVotes) * 100;
+
+      if (currentVote === name) {
+        return setCurrentVote("");
+      }
+    }
+
+    // add the new vote
+    const newVoteIndex = tempVotes.findIndex((vote) => vote.name === name);
+    tempVotes[newVoteIndex].votes += 1;
+    tempVotes[newVoteIndex].percentage =
+      (tempVotes[newVoteIndex].votes / totalVotes) * 100;
+    setAllVotes(tempVotes);
+    setCurrentVote(name);
+  };
 
   const fakeProcessSecret = () => {
     setPasswordCheckState("loading");
@@ -39,6 +91,7 @@ const BusinessVoting = () => {
       }, 2000);
     }, 2000);
   };
+
   return (
     <article className="flex flex-col space-y-4" id="business-voting">
       <h2 className="text-xl md:text-2xl font-semibold">Business Voting</h2>
@@ -54,20 +107,6 @@ const BusinessVoting = () => {
             </CardTitle>
           </CardHeader>
 
-          {/* <h5 className="font-bold text-xl">Hey CJ,</h5>
-
-          <Button
-            size="lg"
-            className="w-full py-8 flex items-center justify-between transition-colors hover:bg-slate-800 group shadow-md"
-          >
-            <Inbox size={18} className="text-slate-300" />
-            <span className="text-slate-300">13 active polls</span>
-            <ChevronRight
-              size={18}
-              className="transition-transform group-hover:translate-x-1 duration-300"
-            />
-          </Button> */}
-
           <CardContent>
             <h5 className="text-sm text-slate-400 ">Pollen Labs</h5>
             <h3 className="font-semibold text-lg md:text-2xl leading-tighter text-slate-50">
@@ -78,13 +117,7 @@ const BusinessVoting = () => {
                 <span>
                   <Users2 size={12} className="mr-1" />
                 </span>
-                <span className="">13 voters</span>
-              </div>
-              <div className="flex items-center border border-green-600 bg-green-950 text-xs text-green-400 px-2 py-0.5 rounded-lg">
-                <span>
-                  <ThumbsUpIcon size={12} className="mr-1" />
-                </span>
-                <span>68% approval</span>
+                <span>{totalVotes} voters</span>
               </div>
             </div>
             <div className="p-2" />
@@ -167,63 +200,52 @@ const BusinessVoting = () => {
             >
               <section className="p-3 select-none text-pretty text-slate-300">
                 <ul className="space-y-2">
-                  <li className="text-slate-300 relative rounded-lg border-[1.5px] border-green-500 overflow-hidden h-12">
-                    <motion.span
-                      className="absolute top-0 left-0 bg-green-700 h-full"
-                      initial={{ width: 0 }}
-                      layout
-                      animate={{
-                        width: votesVisible ? "40%" : 0,
+                  {allVotes.map((vote) => (
+                    <li
+                      key={vote.name}
+                      className={`text-slate-300 relative rounded-lg border-2 ${
+                        currentVote === vote.name
+                          ? "border-green-500"
+                          : "border-slate-500"
+                      } overflow-hidden h-12 cursor-pointer hover:border-green-500 active:scale-90 transition-transform duration-300 ease-in-out`}
+                      onClick={() => {
+                        updateVote(vote.name);
                       }}
-                      transition={{
-                        duration: 0.4,
-                        type: "spring",
-                        bounce: 0.1,
-                        delay: 0.2,
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center text-green-300">
-                      South East Asia
-                    </div>
-                  </li>
-                  <li className="text-slate-300 relative rounded-lg border-[1.5px] border-slate-500 overflow-hidden h-12">
-                    <motion.span
-                      className="absolute top-0 left-0 bg-slate-700 h-full"
-                      initial={{ width: 0 }}
-                      layout
-                      animate={{
-                        width: votesVisible ? "22%" : 0,
-                      }}
-                      transition={{
-                        duration: 0.4,
-                        type: "spring",
-                        bounce: 0.1,
-                        delay: 0.2,
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      Turkey
-                    </div>
-                  </li>
-                  <li className="text-slate-300 relative rounded-lg border-[1.5px] border-slate-500 overflow-hidden h-12">
-                    <motion.span
-                      className="absolute top-0 left-0 bg-slate-700 h-full"
-                      initial={{ width: 0 }}
-                      layout
-                      animate={{
-                        width: votesVisible ? "18%" : 0,
-                      }}
-                      transition={{
-                        duration: 0.4,
-                        type: "spring",
-                        bounce: 0.1,
-                        delay: 0.2,
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      Greenland
-                    </div>
-                  </li>
+                    >
+                      <motion.span
+                        className={`absolute top-0 left-0 ${
+                          currentVote === vote.name
+                            ? "bg-green-700"
+                            : "bg-slate-700"
+                        } h-full`}
+                        initial={{ width: 0 }}
+                        layout
+                        animate={{
+                          width: votesVisible ? `${vote.percentage}%` : 0,
+                        }}
+                        transition={{
+                          duration: 0.4,
+                          type: "spring",
+                          bounce: 0.1,
+                          delay: 0.2,
+                        }}
+                      />
+                      <div
+                        className={`absolute inset-0 flex items-center justify-center ${
+                          currentVote === vote.name
+                            ? "text-green-300"
+                            : "text-slate-3000"
+                        }`}
+                      >
+                        {vote.name}
+                      </div>
+                      <span className="absolute left-2 top-1/2 transform -translate-y-1/2">
+                        {currentVote === vote.name && (
+                          <CheckCircle2 size={18} className="text-green-300" />
+                        )}
+                      </span>
+                    </li>
+                  ))}
                 </ul>
               </section>
             </motion.div>
