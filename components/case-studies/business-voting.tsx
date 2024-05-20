@@ -93,7 +93,7 @@ const BusinessVoting = () => {
   };
 
   return (
-    <article className="flex flex-col space-y-4" id="business-voting">
+    <section className="flex flex-col space-y-4" id="business-voting">
       <h2 className="text-xl md:text-2xl font-semibold">Business Voting</h2>
       <div className="flex flex-col items-center justify-center bg-slate-200 rounded-lg px-2 py-6 md:px-6">
         <Card
@@ -126,7 +126,7 @@ const BusinessVoting = () => {
             <AnimatePresence mode="popLayout">
               {passwordCheckState !== "complete" && (
                 <motion.div
-                  className="flex space-x-2"
+                  className="flex flex-col md:flex-row space-y-2 md:space-x-2 md:space-y-0"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{
@@ -262,7 +262,7 @@ const BusinessVoting = () => {
           </CardFooter>
         </Card>
       </div>
-    </article>
+    </section>
   );
 };
 

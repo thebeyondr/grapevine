@@ -1,4 +1,5 @@
 import BusinessVoting from "@/components/case-studies/business-voting";
+import { GameEvent } from "@/components/case-studies/game-event";
 import HealthcarePlatform from "@/components/case-studies/healthcare-platform";
 
 const useCaseList = [
@@ -9,8 +10,8 @@ const useCaseList = [
       "Explore how Grapevine can be used to build a healthcare communication platform for shared patient care",
   },
   {
-    title: "Gaming Community Engagement	",
-    anchor: "gaming-community-engagement",
+    title: "Gaming Community Event	",
+    anchor: "game-event",
     description:
       "Explore how Grapevine can be used to build a gaming community for shared gaming experiences",
   },
@@ -37,6 +38,7 @@ export default function Home() {
       <section className="flex flex-col space-y-4">
         <HealthcarePlatform />
         <BusinessVoting />
+        <GameEvent />
       </section>
     </main>
   );
