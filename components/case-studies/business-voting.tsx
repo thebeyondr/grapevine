@@ -117,7 +117,9 @@ const BusinessVoting = () => {
                 <span>
                   <Users2 size={12} className="mr-1" />
                 </span>
-                <span>{totalVotes} voters</span>
+                <span>
+                  {allVotes.reduce((acc, curr) => acc + curr.votes, 0)} voters
+                </span>
               </div>
             </div>
             <div className="p-2" />
