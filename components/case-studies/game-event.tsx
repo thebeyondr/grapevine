@@ -1,12 +1,21 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Eye, EyeOff, Loader2, Lock, TicketCheck } from "lucide-react";
+import {
+  Check,
+  Clock12,
+  Disc2,
+  Eye,
+  EyeOff,
+  Loader2,
+  Lock,
+  MapPin,
+} from "lucide-react";
 import Image from "next/image";
-import { MouseEvent, useState } from "react";
+import { useState } from "react";
 
 const GameEvent = () => {
   const [imgPosition, setImgPosition] = useState({ x: 0, y: 0 });
@@ -14,17 +23,6 @@ const GameEvent = () => {
     "loading" | "success" | "error" | "complete" | "idle"
   >("idle");
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleMouseMove = (e: MouseEvent<HTMLElement>) => {
-    const dampeningFactor = 0.01;
-    const newX = (e.clientX - 167 - 200) * dampeningFactor;
-    const newY = (e.clientY - 367 - 200) * dampeningFactor;
-    setImgPosition({ x: newX, y: newY });
-  };
-
-  const handleMouseLeave = () => {
-    setImgPosition({ x: 0, y: 0 });
-  };
 
   const fakeProcessSecret = () => {
     setPasswordCheckState("loading");
@@ -43,8 +41,8 @@ const GameEvent = () => {
         <motion.div
           layout
           className={`relative rounded-lg overflow-clip`}
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+          // onMouseMove={handleMouseMove}
+          // onMouseLeave={handleMouseLeave}
         >
           <div
             className="relative overflow-clip rounded-lg w-full h-[500px]"
@@ -67,19 +65,25 @@ const GameEvent = () => {
                 : "backdrop-blur-md"
             } transition-all duration-300`}
           >
+            <motion.p
+              layoutId="secret-event"
+              className="text-blue-100 uppercase tracking-wider text-sm font-semibold"
+            >
+              Secret event
+            </motion.p>
             <motion.h3
               layout
               className="text-white text-3xl md:text-4xl font-semibold leading-8 tracking-tight"
             >
               {passwordCheckState === "complete"
-                ? "Let's party together, warrior!"
+                ? "You're invited to party!"
                 : "Something awesome awaits the beckoned few."}
             </motion.h3>
             <div className="p-2"></div>
             <AnimatePresence mode="popLayout">
               {passwordCheckState !== "complete" && (
                 <motion.div
-                  className="flex flex-col md:flex-row space-y-2 md:space-x-2 md:space-y-0 justify-center items-center"
+                  className="flex flex-col md:flex-row space-y-2 md:space-x-2 md:space-y-0 items-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{
@@ -96,7 +100,7 @@ const GameEvent = () => {
                         passwordCheckState === "loading" ||
                         passwordCheckState === "success"
                       }
-                      className="flex-1 h-11 bg-slate-700 text-slate-100 border-slate-500 focus-visible:ring-slate-400 ring-offset-slate-700 placeholder:text-slate-400 pl-10"
+                      className="flex-grow h-11 bg-slate-700 text-slate-100 border-slate-500 focus-visible:ring-slate-400 ring-offset-slate-700 placeholder:text-slate-400 pl-10"
                     />
                     <div className="absolute inset-y-1 left-3 top-1/2 transform -translate-y-1/2 text-slate-300 w-max">
                       <Lock size={16} />
@@ -116,7 +120,7 @@ const GameEvent = () => {
                     className={`${buttonVariants({
                       variant: "ghost",
                       size: "lg",
-                    })} w-full ${
+                    })} w-full md:w-max ${
                       passwordCheckState === "success"
                         ? "bg-green-600"
                         : "bg-slate-800 hover:bg-slate-700"
@@ -139,23 +143,43 @@ const GameEvent = () => {
               )}
             </AnimatePresence>
 
-            {/* <Button
-              variant={"ghost"}
-              size={"lg"}
-              className="text-white bg-slate-900/60"
-            >
-              Unlock details
-            </Button> */}
+            <AnimatePresence mode="wait">
+              {passwordCheckState === "complete" && (
+                <motion.div
+                  className="w-full"
+                  layout
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                >
+                  <Card className="bg-slate-900/20 text-slate-50 backdrop-blur-md border-[1.5px] border-slate-100/20">
+                    <CardHeader>
+                      <CardTitle>Saturday, 20th March</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-col space-y-1 text-slate-200">
+                        <p className="text-orange-300">193 tickets left!</p>
+                        <p className="flex items-center space-x-2">
+                          <Clock12 size={16} /> <span>8PM - 6AM</span>
+                        </p>
+                        <p className="flex items-center space-x-2">
+                          <Disc2 size={16} />
+                          <span>
+                            Sets from RIOT, EPROM, Space Laces and more!
+                          </span>
+                        </p>
+                        <p className="flex items-center space-x-2">
+                          <MapPin size={16} />
+                          <span>65 Fridgeon St, New York, NY</span>
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
-        <Card className="w-full bg-slate-900 rounded-lg flex flex-col md:w-[500px]">
-          <CardHeader>
-            <CardTitle className="text-sm tracking-widest text-blue-300 flex items-center space-x-1">
-              <TicketCheck size={16} />
-              <span>NHANCE</span>
-            </CardTitle>
-          </CardHeader>
-        </Card>
       </div>
     </section>
   );
